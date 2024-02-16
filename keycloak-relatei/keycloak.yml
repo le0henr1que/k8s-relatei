@@ -1,1 +1,47 @@
-//yml relatei keycloak.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-config
+data:
+  DB_URL: jdbc:mysql://mysql-service:3306/keycloak
+  KEYCLOAK_USER: admin
+  KEYCLOAK_PASSWORD: admin
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-relatei
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-relatei
+  template:
+    metadata:
+      labels:
+        app: keycloak-relatei
+        # version: A
+    spec:
+      containers:
+        - name: keycloak-relatei
+          image: zaphodbrox/keycloak-relatei
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: keycloak-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-relatei
+spec:
+  type: LoadBalancer
+  selector:
+    app: keycloak-relatei
+  ports:
+    - port: 9000
+      targetPort: 8080
+      nodePort: 30001
