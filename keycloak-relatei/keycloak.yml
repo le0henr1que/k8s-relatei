@@ -4,8 +4,8 @@ metadata:
   name: keycloak-config
 data:
   DB_URL: jdbc:mysql://mysql-service:3306/keycloak
-  KEYCLOAK_USER: admin
-  KEYCLOAK_PASSWORD: admin
+  KEYCLOAK_ADMIN: admin
+  KEYCLOAK_ADMIN_PASSWORD: admin
 
 ---
 apiVersion: apps/v1
@@ -31,6 +31,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: keycloak-config
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: keycloak-relatei
+spec:
+  host: keycloak-relatei
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
 
 ---
 apiVersion: v1

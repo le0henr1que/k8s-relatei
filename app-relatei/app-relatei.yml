@@ -20,6 +20,16 @@ spec:
             - containerPort: 5173
 
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: app-relatei
+spec:
+  host: app-relatei
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -31,4 +41,4 @@ spec:
   ports:
     - port: 8000
       targetPort: 5173
-      nodePort: 30000
+      nodePort: 30002
