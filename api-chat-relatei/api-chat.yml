@@ -1,1 +1,43 @@
-//yml relatei api keycloak.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-chat-relatei
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-chat-relatei
+  template:
+    metadata:
+      labels:
+        app: api-chat-relatei
+    spec:
+      containers:
+        - name: api-chat-relatei
+          image: zaphodbrox/api-chat-relatei:latest
+          ports:
+            - containerPort: 5000
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: api-chat-relatei
+spec:
+  host: api-chat-relatei
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-chat-relatei
+spec:
+  type: LoadBalancer
+  selector:
+    app: api-chat-relatei
+  ports:
+    - port: 3001
+      targetPort: 5000
+      nodePort: 30003
